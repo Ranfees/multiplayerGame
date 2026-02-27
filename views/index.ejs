@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        html,body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="myCanvas" style="border:4px solid #000000; background-color: rgb(160, 133, 189)"></canvas>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let upPressed = false;
+        let downPressed = false;
+        let wPressed = false;
+        let sPressed = false;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Paddle {
+            constructor(x, color) {
+                this.x = x;
+                this.y = canvas.height / 2 - 40;
+                this.w = 20;
+                this.h = 100;
+                this.color = color;
+                this.score = 0;
+                this.speed = 7;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+                ctx.shadowBlur = 0;
+            }
+
+            update(up, down) {
+                if (up && this.y > 40) this.y -= this.speed;
+                if (down && this.y < canvas.height - 40 - this.h) this.y += this.speed;
+            }
+        }
+
+        class Ball {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.radius = 15;
+                this.dx = (Math.random() > 0.5 ? 1 : -1) * 5;
+                this.dy = (Math.random() - 0.5) * 8;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.fillStyle = "white";
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            update(p1, p2) {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                if (this.y - this.radius < 40 || this.y + this.radius > canvas.height - 40) {
+                    this.dy *= -1;
+                }
+
+                const checkCollision = (p) => {
+                    return this.x + this.radius > p.x &&
+                        this.x - this.radius < p.x + p.w &&
+                        this.y > p.y &&
+                        this.y < p.y + p.h;
+                };
+
+                if (checkCollision(p1) || checkCollision(p2)) {
+                    this.dx *= -1.1;
+                }
+
+                // Scoring
+                if (this.x < 100) {
+                    p2.score++;
+                    this.reset();
+                } else if (this.x > canvas.width - 100) {
+                    p1.score++;
+                    this.reset();
+                }
+            }
+        }
+
+        const p1 = new Paddle(120, "red");
+        const p2 = new Paddle(canvas.width - 140, "lime");
+        const ball = new Ball();
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'w') wPressed = true;
+            if (e.key === 's') sPressed = true;
+            if (e.key === 'ArrowUp') upPressed = true;
+            if (e.key === 'ArrowDown') downPressed = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'w') wPressed = false;
+            if (e.key === 's') sPressed = false;
+            if (e.key === 'ArrowUp') upPressed = false;
+            if (e.key === 'ArrowDown') downPressed = false;
+        });
+
+        function drawTable() {
+      
+            ctx.fillStyle = "#0b3d91";
+            ctx.fillRect(100, 40, canvas.width - 200, canvas.height - 80);
+
+            // Middle Line & Circle
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 40);
+            ctx.lineTo(canvas.width / 2, canvas.height - 40);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.font = "40px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText(p1.score, canvas.width / 4, 100);
+            ctx.fillText(p2.score, (canvas.width / 4) * 3, 100);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawTable();
+            p1.update(wPressed, sPressed);
+            p2.update(upPressed, downPressed);
+            ball.update(p1, p2);
+
+            p1.draw();
+            p2.draw();
+            ball.draw();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+
+<script></script>
+</body>
+
+</html>
