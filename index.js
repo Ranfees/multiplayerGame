@@ -13,6 +13,8 @@ app.use(express.static("public"));
 app.get('/',(req,res)=>{
     return res.render('index')
 })
+
+
 server.listen(3000,()=>{
     console.log('app is running on port 3000')
 })
