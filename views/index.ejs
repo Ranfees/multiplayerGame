@@ -250,7 +250,6 @@
             ctx.fillStyle = "#0b3d91";
             ctx.fillRect(100, 40, cw - 200, ch - 80);
 
-            // Middle Line
             ctx.strokeStyle = "white";
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -258,18 +257,15 @@
             ctx.lineTo(cw / 2, ch - 40);
             ctx.stroke();
 
-            // Center Circle
             ctx.beginPath();
             ctx.arc(cw / 2, ch / 2, 50, 0, Math.PI * 2);
             ctx.stroke();
 
-            // Scores
             ctx.font = "40px Arial";
             ctx.fillStyle = "white";
             ctx.fillText(gameState.p1.score, cw / 4, 100);
             ctx.fillText(gameState.p2.score, (cw / 4) * 3, 100);
 
-            // Role indicator
             ctx.font = "20px Arial";
             ctx.fillStyle = "rgba(255,255,255,0.7)";
             ctx.fillText("You are: " + role, 10, 30);
