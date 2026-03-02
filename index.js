@@ -41,7 +41,7 @@ function resetBall() {
 resetBall();
 
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+    console.log('user connected:', socket.id);
 
     let playerRole = null;
 
@@ -114,7 +114,7 @@ setInterval(() => {
     }
 
     io.emit('gameState', gameState);
-}, 1000 / 60);
+}, 1000 / 120);
 
 server.listen(3000, () => {
     console.log('app is running on port 3000')
